@@ -3,11 +3,17 @@ from pip._vendor import requests
 from tkinter import *
 
 
-
+#TK init root method that produces the frame 
 pycoin = Tk()
+# the title of of the application on the app window
 pycoin.title("PyCOIN Portfolio")
 
-
+#return the green for positive and red for negative
+def font_color():
+    if current_val >= 0:
+        return "green"
+    else:
+        return "red"    
 
 def my_pycoin():
     COIN_API = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=20&convert=USD&CMC_PRO_API_KEY=510757cf-cf43-4f5e-8644-3c0b2e8f5589"
@@ -35,12 +41,12 @@ def my_pycoin():
         {
             "symbol" : "BNB",
             "amount_owned" : 200,
-            "price_per_coin" : 360
+            "price_per_coin" : 3600
         },
         {
             "symbol" : "USDC",
             "amount_owned" : 700,
-            "price_per_coin" : .1
+            "price_per_coin" : .25
         },
         {
             "symbol" : "LUNA",
@@ -61,16 +67,17 @@ def my_pycoin():
 #without the if condition it would print 5 sets of data 
     totalval = 0
     coin_row = 1
-
-    for i in range(0, 12):
+    
+    for i in range(0, 20):
             for coin in coins:
                 if conv_api["data"][i]["symbol"] == coin["symbol"]:
                     total_payout = coin["amount_owned"] * coin["price_per_coin"]
                     current_value = coin["amount_owned"] * conv_api["data"][i]["quote"]["USD"]["price"]
                     pl_percoin = conv_api["data"][i]["quote"]["USD"]["price"] - coin["price_per_coin"]
                     total_pl = pl_percoin * current_value
-                    totalval = total_payout * current_value
+                    totalval = total_payout + total_pl
                     #label text printed out within the specific row and column
+                    #grid was used to place the labels 
                     name = Label(pycoin, text=conv_api["data"][i]["name"], bg="gray", fg="black")
                     name.grid(row=coin_row, column=0, sticky=N+S+E+W)
 
@@ -83,13 +90,20 @@ def my_pycoin():
                     total_payout = Label(pycoin, text="${0:.2f}".format(total_payout), bg="white", fg="black")
                     total_payout.grid(row=coin_row, column=3, sticky=N+S+E+W)
 
-                    current_val = Label(pycoin, text="${0:.2F}".format(current_value), bg="gray", fg="black")
+                    current_val = Label(pycoin, text="${0:.2F}".format(current_value), bg="blue", fg="springgreen")
                     current_val.grid(row=coin_row, column=4, sticky=N+S+E+W)
+
 
                     coin_row = coin_row + 1
 
             current_val = Label(pycoin, text="${0:.2F}".format(totalval), bg="gray", fg="black")
             current_val.grid(row=coin_row, column=4, sticky=N+S+E+W)
+
+            # clear the api so the refresh button can give new info
+            #conv_api = ""
+            update = Button(pycoin, text="UPDATE", bg="gray", fg="black", command=my_pycoin)
+            update.grid(row=coin_row +1, column=4, sticky=N+S+E+W)
+
 
 
 
